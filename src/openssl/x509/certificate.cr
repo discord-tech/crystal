@@ -16,6 +16,13 @@ module OpenSSL::X509
       raise Error.new("X509_dup") if @cert.null?
     end
 
+    def self.from_pem(io)
+      bio = MemBIO.new
+      IO.copy(io, bio)
+      x509 = LibCrypto.pem_read_bio_x509(bio, nil, nil, nil)
+      new(x509)
+    end
+
     def finalize
       LibCrypto.x509_free(@cert)
     end
@@ -58,6 +65,50 @@ module OpenSSL::X509
       ret = LibCrypto.x509_add_ext(@cert, extension, -1)
       raise Error.new("X509_add_ext") if ret.null?
       extension
+    end
+
+    def public_key
+      PKey::RSA.new(LibCrypto.x509_get_pubkey(self), false)
+    end
+
+    def subject_name
+      handle = LibCrypto.x509_get_subject_name(self)
+      Name.new LibCrypto.x509_name_dup(handle)
+    end
+
+    def fingerprint(digest : OpenSSL::Digest = OpenSSL::Digest.new("SHA1"))
+      slice = Slice(UInt8).new digest.digest_size
+      if LibCrypto.x509_digest(self, digest.to_unsafe_md, slice, out len) == 0
+        raise X509Error.new
+      end
+      if len != slice.size
+        raise X509Error.new "Fingerprint is corrupted"
+      end
+      slice
+    end
+
+    def fingerprint_hex(digest : OpenSSL::Digest = OpenSSL::Digest.new("SHA1"))
+      DigestBase.hexdump(fingerprint(digest))
+    end
+
+    def verify(pkey)
+      ret = LibCrypto.x509_verify(self, pkey)
+      if ret < 0
+        raise X509Error.new
+      end
+      ret > 0
+    end
+
+    def to_pem(io)
+      bio = MemBIO.new
+      LibCrypto.pem_write_bio_x509(bio, self)
+      IO.copy(bio, io)
+    end
+
+    def to_pem
+      io = MemoryIO.new
+      to_pem(io)
+      io.to_s
     end
   end
 end

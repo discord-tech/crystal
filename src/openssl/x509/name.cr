@@ -4,6 +4,14 @@ require "openssl/lib_crypto"
 module OpenSSL::X509
   # :nodoc:
   class Name
+    enum Flags
+      COMPAT         = 0
+      SEP_COMMA_PLUS = 1 << 16
+      SEP_CPLUS_SPC  = 2 << 16
+      SEP_SPLUS_SPC  = 3 << 16
+      SEP_MULTILINE  = 4 << 16
+    end
+
     # Parses entries in string and initializes a Name object.
     #
     # Example:
@@ -19,6 +27,14 @@ module OpenSSL::X509
           name.add_entry(oid, value)
         end
       end
+    end
+
+    def name(flag : Flags = Flags::COMPAT)
+      bio = MemBIO.new
+      if LibCrypto.x509_name_print_ex(bio, self, 0, flag.value.to_u64) == 0
+        raise X509Error.new
+      end
+      bio.to_string
     end
 
     def initialize
@@ -41,6 +57,14 @@ module OpenSSL::X509
 
     def to_unsafe
       @name
+    end
+
+    def to_s(io)
+      io << name
+    end
+
+    def inspect(io)
+      io << "X509::Name [" << name << "]"
     end
 
     # Adds a new entry.
