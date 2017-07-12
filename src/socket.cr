@@ -111,8 +111,8 @@ class Socket < IO::FileDescriptor
       when Errno::EISCONN
         return
       when Errno::EINPROGRESS, Errno::EALREADY
-        wait_writable(msg: "connect timed out", timeout: timeout) do |error|
-          return yield error
+        wait_writable(timeout: timeout) do |error|
+          return yield IO::Timeout.new("connect timed out")
         end
       else
         return yield Errno.new("connect")
