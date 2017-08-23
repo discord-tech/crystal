@@ -58,12 +58,14 @@ lib LibSSL
   # SSL_CTRL_SET_TMP_DH = 3
   SSL_CTRL_SET_TMP_ECDH = 4
 
-  SSL_CTRL_OPTIONS       = 32
-  SSL_CTRL_MODE          = 33
-  SSL_CTRL_CLEAR_OPTIONS = 77
-  SSL_CTRL_CLEAR_MODE    = 78
+  SSL_CTRL_OPTIONS          = 32
+  SSL_CTRL_MODE             = 33
+  SSL_CTRL_CLEAR_OPTIONS    = 77
+  SSL_CTRL_CLEAR_MODE       = 78
+  SSL_CTRL_SET_READ_AHEAD   = 41
+  SSL_CTRL_EXTRA_CHAIN_CERT = 14
 
-  enum Options : ULong
+  enum Options : UInt64
     LEGACY_SERVER_CONNECT       = 0x00000004
     SAFARI_ECDHE_ECDSA_BUG      = 0x00000040
     DONT_INSERT_EMPTY_FRAGMENTS = 0x00000800
@@ -120,7 +122,7 @@ lib LibSSL
   end
 
   @[Flags]
-  enum Modes : ULong
+  enum Modes : UInt64
     ENABLE_PARTIAL_WRITE       = 0x00000001
     ACCEPT_MOVING_WRITE_BUFFER = 0x00000002
     AUTO_RETRY                 = 0x00000004
@@ -167,7 +169,6 @@ lib LibSSL
   fun ssl_ctx_get_ex_new_index = SSL_CTX_get_ex_new_index(argl : Int64, argp : Void*, new_func : Void*,
                                                           dup_func : Void*, free_func : Void*) : Int
   fun ssl_ctx_set_ex_data = SSL_CTX_set_ex_data(ctx : SSLContext, idx : Int, arg : Void*) : Int
-  fun ssl_ctx_set_verify = SSL_CTX_set_verify(ctx : SSLContext, mode : Int, ct : VerifyCallback)
   fun ssl_get_ex_data_x509_store_ctx_idx = SSL_get_ex_data_X509_STORE_CTX_idx : Int
   fun x509_store_ctx_get_ex_data = X509_STORE_CTX_get_ex_data(ctx : LibCrypto::X509_STORE_CTX, idx : Int) : Void*
   fun ssl_get_ssl_ctx = SSL_get_SSL_CTX(ssl : Void*) : SSLContext
@@ -175,19 +176,12 @@ lib LibSSL
   fun ssl_ctx_set_verify_depth = SSL_CTX_set_verify_depth(ctx : SSLContext, depth : Int)
   fun ssl_ctx_use_certificate_file = SSL_CTX_use_certificate_file(ctx : SSLContext, file : UInt8*, type : Int) : Int
   fun ssl_ctx_use_certificate = SSL_CTX_use_certificate(ctx : SSLContext, x509 : LibCrypto::X509) : Int
-  fun ssl_ctx_use_privatekey_file = SSL_CTX_use_PrivateKey_file(ctx : SSLContext, file : UInt8*, type : Int) : Int
   fun ssl_ctx_use_privatekey = SSL_CTX_use_PrivateKey(ctx : SSLContext, pkey : LibCrypto::EVP_PKEY) : Int
   fun ssl_ctx_check_private_key = SSL_CTX_check_private_key(ctx : SSLContext) : Int
   fun ssl_ctx_set_cipher_list = SSL_CTX_set_cipher_list(ctx : SSLContext, str : UInt8*) : Int
-  fun ssl_get_error = SSL_get_error(ssl : SSL, ret : Int) : Int
   fun ssl_load_error_strings = SSL_load_error_strings
   fun ssl_library_init = SSL_library_init
-
-  SSL_CTRL_SET_READ_AHEAD   = 41
-  SSL_CTRL_EXTRA_CHAIN_CERT = 14
-  SSL_CTRL_CLEAR_OPTIONS    = 77
-  SSL_CTRL_OPTIONS          = 32
-  fun ssl_ctx_ctrl = SSL_CTX_ctrl(ctx : SSLContext, cmd : Int, larg : Int64, parg : Void*) : Int64
+  fun ssl_ctx_ctrl = SSL_CTX_ctrl(ctx : SSLContext, cmd : Int, larg : UInt64, parg : Void*) : UInt64
 
   @[Raises]
   fun ssl_new = SSL_new(ctx : SSLContext) : SSL
@@ -215,12 +209,11 @@ lib LibSSL
   fun ssl_ctx_get_verify_mode = SSL_CTX_get_verify_mode(ctx : SSLContext) : VerifyMode
   fun ssl_ctx_set_verify = SSL_CTX_set_verify(ctx : SSLContext, mode : VerifyMode, callback : VerifyCallback)
   fun ssl_ctx_set_default_verify_paths = SSL_CTX_set_default_verify_paths(ctx : SSLContext) : Int
-  fun ssl_ctx_ctrl = SSL_CTX_ctrl(ctx : SSLContext, cmd : Int, larg : ULong, parg : Void*) : ULong
 
   {% if OPENSSL_110 %}
-    fun ssl_ctx_get_options = SSL_CTX_get_options(ctx : SSLContext) : ULong
-    fun ssl_ctx_set_options = SSL_CTX_set_options(ctx : SSLContext, larg : ULong) : ULong
-    fun ssl_ctx_clear_options = SSL_CTX_clear_options(ctx : SSLContext, larg : ULong) : ULong
+    fun ssl_ctx_get_options = SSL_CTX_get_options(ctx : SSLContext) : UInt64
+    fun ssl_ctx_set_options = SSL_CTX_set_options(ctx : SSLContext, larg : UInt64) : UInt64
+    fun ssl_ctx_clear_options = SSL_CTX_clear_options(ctx : SSLContext, larg : UInt64) : UInt64
   {% end %}
 
   @[Raises]

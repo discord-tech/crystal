@@ -1,6 +1,6 @@
 require "../lib_crypto"
 
-struct OpenSSL::MemBIO
+class OpenSSL::MemBIO
   include IO
 
   class BIOError < OpenSSL::Error; end
@@ -30,12 +30,12 @@ struct OpenSSL::MemBIO
   end
 
   def to_string
-    buf = MemoryIO.new
+    buf = IO::Memory.new
     IO.copy(self, buf)
     buf.to_s
   end
 
   def to_unsafe
-    @bio as LibCrypto::Bio*
+    @bio.as(LibCrypto::Bio*)
   end
 end

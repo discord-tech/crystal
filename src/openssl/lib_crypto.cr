@@ -267,14 +267,9 @@ lib LibCrypto
   fun i2d_dsapublickey = i2d_DSAPublicKey(dsa : DSA, pp : UInt8**) : Int32
   fun d2i_dsapublickey = d2i_DSAPublicKey(dsa : DSA*, pp : UInt8**, length : Int64) : Int32
 
-  alias X509_NAME = Void*
-
   fun x509_name_free = X509_NAME_free(name : X509_NAME)
   fun x509_name_dup = X509_NAME_dup(name : X509_NAME) : X509_NAME
   fun x509_name_print_ex = X509_NAME_print_ex(bio : BIO, name : X509_NAME, indent : Int32, flags : UInt64) : Int32
-
-  alias X509_STORE_CTX = Void*
-  alias X509 = Void*
 
   fun x509_store_ctx_get_error = X509_STORE_CTX_get_error(store : X509_STORE_CTX) : Int32
   fun x509_store_ctx_get_current_cert = X509_STORE_CTX_get_current_cert(store : X509_STORE_CTX) : X509
@@ -296,8 +291,6 @@ lib LibCrypto
   MBSTRING_FLAG = 0x1000
   MBSTRING_UTF8 = MBSTRING_FLAG
 
-  fun x509_name_add_entry_by_txt = X509_NAME_add_entry_by_txt(name : X509_NAME, field : UInt8*, type : Int32, bytes : UInt8*, len : Int32,
-                                                              loc : Int32, set : Int32) : Int32
   fun x509_set_issuer_name = X509_set_issuer_name(x509 : X509, name : X509_NAME) : Int32
 
   struct X509V3_CTX
@@ -312,12 +305,10 @@ lib LibCrypto
 
   alias X509_REQ = Void*
   alias X509_CRL = Void*
-  alias X509_EXTENSION = Void*
 
   fun x509v3_set_ctx = X509V3_set_ctx(ctx : X509V3_CTX*, issuer : X509, subj : X509, req : X509_REQ,
                                       crl : X509_CRL, flags : Int32)
   fun x509v3_ext_conf_nid = X509V3_EXT_conf_nid(conf : Void*, ctx : X509V3_CTX*, ext_nid : Int32, value : UInt8*) : X509_EXTENSION
-  fun x509_add_ext = X509_add_ext(x509 : X509, ex : X509_EXTENSION, loc : Int32) : Int32
 
   NID_ext_key_usage = 126
   NID_key_usage     =  83
@@ -359,7 +350,6 @@ lib LibCrypto
   GEN_DNS   = 2
   GEN_IPADD = 7
 
-  NID_undef            =  0
   NID_commonName       = 13
   NID_subject_alt_name = 85
 
@@ -384,9 +374,6 @@ lib LibCrypto
   fun x509_get_ext = X509_get_ext(x : X509, idx : Int) : X509_EXTENSION
   fun x509_get_ext_count = X509_get_ext_count(x : X509) : Int
   fun x509_get_ext_d2i = X509_get_ext_d2i(x : X509, nid : Int, crit : Int*, idx : Int*) : Void*
-
-  MBSTRING_UTF8 = 0x1000
-
   fun x509_name_add_entry_by_txt = X509_NAME_add_entry_by_txt(name : X509_NAME, field : Char*, type : Int, bytes : Char*, len : Int, loc : Int, set : Int) : X509_NAME
   fun x509_name_dup = X509_NAME_dup(a : X509_NAME) : X509_NAME
   fun x509_name_entry_count = X509_NAME_entry_count(name : X509_NAME) : Int

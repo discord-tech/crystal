@@ -32,7 +32,7 @@ module OpenSSL::X509
     def name(flag : Flags = Flags::COMPAT)
       bio = MemBIO.new
       if LibCrypto.x509_name_print_ex(bio, self, 0, flag.value.to_u64) == 0
-        raise X509Error.new
+        raise Error.new("name_print_ex failed")
       end
       bio.to_string
     end

@@ -1,4 +1,5 @@
-require "../openssl"
+require "openssl/lib_crypto"
+require "openssl/pkey/rsa"
 require "../asn1/time"
 
 class OpenSSL::X509::Generator
@@ -99,7 +100,7 @@ class OpenSSL::X509::Generator
 
   private def random_serial
     long = uninitialized Int64
-    ptr = pointerof(long) as Int32*
+    ptr = pointerof(long).as(UInt32*)
     ptr[0] = rand(UInt32::MAX)
     ptr[1] = rand(UInt32::MAX)
     long
