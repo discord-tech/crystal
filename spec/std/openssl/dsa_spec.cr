@@ -1,5 +1,6 @@
 require "spec"
-require "../src/openssl"
+require "openssl"
+require "openssl/pkey/dsa"
 
 describe OpenSSL::PKey::DSA do
   it "should be able to generate DSA key" do
@@ -18,7 +19,7 @@ describe OpenSSL::PKey::DSA do
 
   it "should be able to load DSA from pem" do
     dsa = OpenSSL::PKey::DSA.generate(1024)
-    pem = MemoryIO.new
+    pem = IO::Memory.new
     dsa.to_pem(pem)
 
     pem.rewind

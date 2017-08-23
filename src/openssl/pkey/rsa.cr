@@ -1,11 +1,12 @@
-require "../lib_crypto"
+require "openssl/pkey/pkey"
+require "openssl/lib_crypto"
 
 module OpenSSL
   class PKey::RSA < PKey
     class RSAError < PKeyError; end
 
     def self.new(pem : String, password = nil)
-      self.new(MemoryIO.new(io), password)
+      self.new(IO::Memory.new(io), password)
     end
 
     def self.new(io : IO, password = nil)
@@ -22,14 +23,14 @@ module OpenSSL
     def self.generate(size)
       rsa = LibCrypto.rsa_generate_key(size, 65537.to_u32, nil, nil)
       new(true).tap do |pkey|
-        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_rsaEncryption, rsa as Pointer(Void))
+        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_rsaEncryption, rsa.as(Pointer(Void)))
       end
     end
 
     def public_key
       pub_rsa = LibCrypto.rsapublickey_dup(rsa)
       RSA.new(false).tap do |pkey|
-        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_rsaEncryption, pub_rsa as Pointer(Void))
+        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_rsaEncryption, pub_rsa.as(Pointer(Void)))
       end
     end
 

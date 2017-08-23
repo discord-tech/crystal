@@ -1,4 +1,4 @@
-require "../openssl"
+require "openssl"
 
 module OpenSSL
   abstract class PKey
@@ -59,7 +59,7 @@ module OpenSSL
     end
 
     def to_pem
-      io = MemoryIO.new
+      io = IO::Memory.new
       to_pem(io)
       io.to_s
     end

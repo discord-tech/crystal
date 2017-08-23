@@ -1,4 +1,5 @@
-require "../lib_crypto"
+require "openssl/bio/mem_bio"
+require "openssl/lib_crypto"
 require "./pkey"
 
 module OpenSSL
@@ -6,7 +7,7 @@ module OpenSSL
     class DSAError < PKeyError; end
 
     def self.new(pem : String, password = nil)
-      self.new(MemoryIO.new(pem), password)
+      self.new(IO::Memory.new(pem), password)
     end
 
     def self.new(io : IO, password = nil)
@@ -28,7 +29,7 @@ module OpenSSL
         raise DSAError.new "Neither PUB or PRIV key"
       end
       new(priv_key).tap do |pkey|
-        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_dsa, dsa as Pointer(Void))
+        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_dsa, dsa.as(Pointer(Void)))
       end
     end
 
@@ -46,7 +47,7 @@ module OpenSSL
         raise DSAError.new
       end
       new(true).tap do |pkey|
-        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_dsa, dsa as Pointer(Void))
+        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_dsa, dsa.as(Pointer(Void)))
       end
     end
 
@@ -87,9 +88,9 @@ module OpenSSL
     def public_key
       f1 = ->LibCrypto.i2d_dsapublickey
       f2 = ->LibCrypto.d2i_dsapublickey
-      pub_dsa = LibCrypto.asn1_dup(f1.pointer, f2.pointer, dsa as Void*) as DSA
+      pub_dsa = LibCrypto.asn1_dup(f1.pointer, f2.pointer, dsa.as(Void*)).as(DSA)
       DSA.new(false).tap do |pkey|
-        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_dsa, pub_dsa as Pointer(Void))
+        LibCrypto.evp_pkey_assign(pkey, LibCrypto::NID_dsa, pub_dsa.as(Pointer(Void)))
       end
     end
 

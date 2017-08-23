@@ -15,7 +15,7 @@ module OpenSSL
       {% for name in names %}
       class {{name.id}} < Digest
         def self.new
-          new("{{name.id}}", create_evp_mt_ctx("{{name.id}}"))
+          new("{{name.id}}", new_evp_mt_ctx("{{name.id}}"))
         end
       end
       {% end %}

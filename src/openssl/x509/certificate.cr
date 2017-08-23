@@ -1,4 +1,5 @@
 require "openssl/lib_crypto"
+require "openssl/bio/mem_bio"
 require "./extension"
 require "./name"
 
@@ -79,10 +80,10 @@ module OpenSSL::X509
     def fingerprint(digest : OpenSSL::Digest = OpenSSL::Digest.new("SHA1"))
       slice = Slice(UInt8).new digest.digest_size
       if LibCrypto.x509_digest(self, digest.to_unsafe_md, slice, out len) == 0
-        raise X509Error.new
+        raise Error.new("X509 digest compution failed")
       end
       if len != slice.size
-        raise X509Error.new "Fingerprint is corrupted"
+        raise Error.new("X509 fingerprint is corrupted")
       end
       slice
     end
@@ -94,7 +95,7 @@ module OpenSSL::X509
     def verify(pkey)
       ret = LibCrypto.x509_verify(self, pkey)
       if ret < 0
-        raise X509Error.new
+        raise Error.new("X509 verification failed")
       end
       ret > 0
     end
@@ -106,7 +107,7 @@ module OpenSSL::X509
     end
 
     def to_pem
-      io = MemoryIO.new
+      io = IO::Memory.new
       to_pem(io)
       io.to_s
     end

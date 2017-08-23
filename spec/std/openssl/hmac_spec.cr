@@ -21,9 +21,9 @@ describe OpenSSL::HMAC do
     end
 
     it "compute HMAC for #{algorithm} using an instance" do
-      next if tuple[0] == :dss
+      next if algorithm == :dss
 
-      hmac = OpenSSL::HMAC.new "foo", cipher
+      hmac = OpenSSL::HMAC.new(algorithm, "foo")
       hmac << "bar"
       hmac.hexdigest.should eq(expected)
     end
