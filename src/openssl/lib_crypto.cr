@@ -283,8 +283,8 @@ lib LibCrypto
   fun x509_digest = X509_digest(x509 : X509, type : EVP_MD, md : UInt8*, len : UInt32*) : Int32
   fun x509_set_version = X509_set_version(x509 : X509, version : Int64) : Int32
   fun x509_get_serialnumber = X509_get_serialNumber(x509 : X509) : ASN1_INTEGER
-  fun x509_set_notbefore = X509_set_notBefore(x509 : X509, tm : ASN1_TIME) : Int32
-  fun x509_set_notafter = X509_set_notAfter(x509 : X509, tm : ASN1_TIME) : Int32
+  fun x509_set_notbefore = X509_set1_notBefore(x509 : X509, tm : ASN1_TIME) : Int32
+  fun x509_set_notafter = X509_set1_notAfter(x509 : X509, tm : ASN1_TIME) : Int32
   fun x509_set_pubkey = X509_set_pubkey(x509 : X509, pkey : EVP_PKEY) : Int32
   fun x509_verify = X509_verify(x509 : X509, pkey : EVP_PKEY) : Int32
 
