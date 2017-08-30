@@ -65,7 +65,7 @@ lib LibSSL
   SSL_CTRL_SET_READ_AHEAD   = 41
   SSL_CTRL_EXTRA_CHAIN_CERT = 14
 
-  enum Options : ULong
+  enum Options : UInt64
     LEGACY_SERVER_CONNECT       = 0x00000004
     SAFARI_ECDHE_ECDSA_BUG      = 0x00000040
     DONT_INSERT_EMPTY_FRAGMENTS = 0x00000800
@@ -122,7 +122,7 @@ lib LibSSL
   end
 
   @[Flags]
-  enum Modes : Int64
+  enum Modes : UInt64
     ENABLE_PARTIAL_WRITE       = 0x00000001
     ACCEPT_MOVING_WRITE_BUFFER = 0x00000002
     AUTO_RETRY                 = 0x00000004
@@ -181,7 +181,7 @@ lib LibSSL
   fun ssl_ctx_set_cipher_list = SSL_CTX_set_cipher_list(ctx : SSLContext, str : UInt8*) : Int
   fun ssl_load_error_strings = SSL_load_error_strings
   fun ssl_library_init = SSL_library_init
-  fun ssl_ctx_ctrl = SSL_CTX_ctrl(ctx : SSLContext, cmd : Int, larg : Int64, parg : Void*) : Int64
+  fun ssl_ctx_ctrl = SSL_CTX_ctrl(ctx : SSLContext, cmd : Int, larg : UInt64, parg : Void*) : UInt64
 
   @[Raises]
   fun ssl_new = SSL_new(ctx : SSLContext) : SSL
@@ -211,9 +211,9 @@ lib LibSSL
   fun ssl_ctx_set_default_verify_paths = SSL_CTX_set_default_verify_paths(ctx : SSLContext) : Int
 
   {% if OPENSSL_110 %}
-    fun ssl_ctx_get_options = SSL_CTX_get_options(ctx : SSLContext) : ULong
-    fun ssl_ctx_set_options = SSL_CTX_set_options(ctx : SSLContext, larg : ULong) : ULong
-    fun ssl_ctx_clear_options = SSL_CTX_clear_options(ctx : SSLContext, larg : ULong) : ULong
+    fun ssl_ctx_get_options = SSL_CTX_get_options(ctx : SSLContext) : UInt64
+    fun ssl_ctx_set_options = SSL_CTX_set_options(ctx : SSLContext, larg : UInt64) : UInt64
+    fun ssl_ctx_clear_options = SSL_CTX_clear_options(ctx : SSLContext, larg : UInt64) : UInt64
   {% end %}
 
   @[Raises]
